@@ -5,9 +5,9 @@ sites=`aws ec2 describe-instances --profile es --filter 'Name=tag:Name,Values=be
 beta_sites=`echo "$sites"|grep beta|awk '{print "<tr><td>",$2,"</td><td><input type=checkbox ",$1," name=value><input type=hidden name=value value=\"",$3,"\"></td></tr>"}'`
 preview_sites=`echo "$sites"|grep preview|awk '{print "<tr><td>",$2,"</td><td><input type=checkbox ",$1," name=value><input type=hidden name=value value=\"",$3,"\"></td></tr>"}'`
 if [ "$arg1" == "all" ];then
-echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>" | sed 's/running/checked/g' | sed 's/stopped/checked/g'
+echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD valign="top"><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD valign="top"><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>" | sed 's/running/checked/g' | sed 's/stopped/checked/g'
 elif [ "$arg1" == "none" ];then
-echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>"
+echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD valign="top"><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD valign="top"><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>"
 else
-echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>" | sed 's/running/checked/g'
+echo "<TABLE><TR><TD WIDTH=20>&nbsp;</TD><TD valign="top"><TABLE>${beta_sites}</TABLE></TD><TD width=100>&nbsp;</TD><TD valign="top"><TABLE>${preview_sites}</TABLE></TD></TR></TABLE>" | sed 's/running/checked/g'
 fi
