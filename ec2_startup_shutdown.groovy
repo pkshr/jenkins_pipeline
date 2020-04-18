@@ -157,7 +157,7 @@ node {
     html_body=sh(script:"/var/lib/jenkins/ES_Beta_Preview_Mgmt/beta_preview_start_stop.sh", returnStdout: true).trim()  
     emailext (
     mimeType: 'text/html',
-    subject: "EnergySavvy: Beta/Preview startup/shutdown '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
+    subject: "EnergySavvy: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
     body: """<p>Site startup/shutdown job [<a href="${env.BUILD_URL}">${env.JOB_NAME}</a>] was executed by ${build_user}. <BR/><BR/>Below is status of current beta/preview sites. <BR/><input type=checkbox checked>Running <input type=checkbox>Stopped<hr/></p> ${html_body}""",
     to: "${email_recipient}"
     )
