@@ -12,7 +12,7 @@ node {
   list_instances_to_start = []
   dry_run=" --dry-run"
   email_recipient = "pawan.shrestha@uplight.com"
-  
+
   if(params.Confirm !="false"){
     dry_run=""
   }
@@ -48,6 +48,9 @@ node {
 
   instances_to_start = ""
   instances_to_stop = ""
+  count_instances_to_start = 0
+  count_instances_to_stop = 0
+
 
   stage('Change instance state (Current to Target)'){
     def json_target = readJSON text: json_str_instance_target_states
@@ -61,9 +64,11 @@ node {
         if ("${it.state}" == "running"){
           list_instances_to_start << "${it.instance_id}"
           instances_to_start="${it.instance_id} ${instances_to_start}"
+          count_instances_to_start=count_instances_to_start+1
         }
         else{
           instances_to_stop="${it.instance_id} ${instances_to_stop}"
+          count_instances_to_stop=count_instances_to_stop+1
         }
       }
       else{
@@ -148,7 +153,7 @@ node {
     }
   }
 
-  stage('Email notification'){
+  stage('Notification'){
     build_user=""
     wrap([$class: 'BuildUser']) {
       build_user = env.BUILD_USER_ID
@@ -160,6 +165,21 @@ node {
     subject: "EnergySavvy: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
     body: """<p>Site startup/shutdown job [<a href="${env.BUILD_URL}">${env.JOB_NAME}</a>] was executed by ${build_user}. <BR/><BR/>Below is status of current beta/preview sites. <BR/><input type=checkbox checked>Running <input type=checkbox>Stopped<hr/></p> ${html_body}""",
     to: "${email_recipient}"
+    )
+
+    instance_start_stop_msg=""
+    if(  count_instances_to_start > 0){
+      instance_start_stop_msg=instance_start_stop_msg+". Total [${count_instances_to_start}] instances started"
+    }
+    if(  count_instances_to_stop > 0){
+      instance_start_stop_msg=instance_start_stop_msg+". Total [${count_instances_to_stop}] instances stopped"
+    } 
+
+    slackSend (
+        channel: "#devops-public",
+        tokenCredentialId: "SlackIntegrationToken",
+        color: "#00FF00",
+        message: "EnergySavvy: ${env.JOB_NAME} ${env.BUILD_NUMBER} ran by ${build_user} ${instance_start_stop_msg}"
     )
   }  
 }
